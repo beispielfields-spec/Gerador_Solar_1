@@ -75,7 +75,7 @@ def calcular_metricas(consumos: list[float]) -> dict:
 # 3. Visualização
 # --------------------------------------------------
 def plotar_graficos(consumos: list[float], metricas: dict) -> None:
-meses = [f"{i:02d}" for i in range(1, 13)]
+    meses = [f"{i:02d}" for i in range(1, 13)]
 
     fig = plt.figure(constrained_layout=True, figsize=(12, 6))
     gs = fig.add_gridspec(1, 3, width_ratios=[1, 3, 3])

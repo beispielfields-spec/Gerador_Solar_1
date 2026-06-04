@@ -33,57 +33,49 @@ with st.sidebar:
         type="password",
         help="Obtenha sua chave em https://console.groq.com/keys"
     )
-# --------------------------------------------------
-# 1. Leitura dos 12 valores mensais
-# --------------------------------------------------
+# ------------------------------------------------------------------
+# 1. Leitura dos 12 valores mensais – usando widgets Streamlit
+# ------------------------------------------------------------------
 def ler_consumo_mensal() -> list[float]:
     """
-    Pergunta ao usuário os 12 consumos mensais (kWh) e retorna uma lista de floats.
+    Mostra 12 campos numéricos onde o usuário insere o consumo mensal (kWh).
+    Retorna uma lista de floats.
     """
-    valores = []
-    print("Digite o consumo mensal (kWh) para cada mês (12 valores).")
-    for mes in range(1, 13):
-        while True:
-            try:
-                val = float(input(f"  Mês {mes:02d}: "))
-                if val < 0:
-                    raise ValueError
-                valores.append(val)
-                break
-            except ValueError:
-                print("  Valor inválido. Por favor, informe um número positivo.")
-    return valores
+    st.subheader("?? Inserir Consumo Mensal (kWh)")
 
-# --------------------------------------------------
+    consumos = []
+    for mes in range(1, 13):
+        # `key` garante que cada campo seja único
+        valor = st.number_input(
+            label=f"Mês {mes:02d}",
+            min_value=0.0,
+            value=0.0,
+            step=0.1,
+            key=f"mes_{mes}"
+        )
+        consumos.append(float(valor))
+    return consumos
+
+# ------------------------------------------------------------------
 # 2. Cálculos
-# --------------------------------------------------
+# ------------------------------------------------------------------
 def calcular_metricas(consumos: list[float]) -> dict:
-    
-    # Conversão para numpy array para operações vetorizadas
     arr = np.array(consumos)
 
-    # Consumo anual
     anual = arr.sum()
-
-    # Média mensal
     media_mensal = anual / 12.0
-
-    # Média diária (30 dias por mês)
     media_diaria = media_mensal / 30.0
 
     # Dados climáticos
     hsp = 4.3          # kWh/m²·dia
     eta = 0.85         # Performance Ratio
 
-    # Potência pico (kWp)
     p_pico = media_diaria / (hsp * eta)
 
-    # Bateria – 12h de autonomia (metade do consumo diário)
     energia_autonomia = media_diaria / 2.0          # kWh
     energia_real = energia_autonomia / eta          # kWh
     dod = 0.90                                     # Profundidade de descarga
     capacidade_kwh = energia_real / dod             # kWh total
-    # Conversão para Ah (tensão 48V)
     capacidade_ah = (capacidade_kwh * 1000) / 48.0
 
     return {
@@ -99,58 +91,66 @@ def calcular_metricas(consumos: list[float]) -> dict:
         "energia_real": energia_real
     }
 
-# --------------------------------------------------
-# 3. Visualização
-# --------------------------------------------------
+
+# ------------------------------------------------------------------
+# 3. Visualização – usando Matplotlib + Streamlit
+# ------------------------------------------------------------------
 def plotar_graficos(consumos: list[float], metricas: dict) -> None:
     meses = [f"{i:02d}" for i in range(1, 13)]
 
-    fig = plt.figure(constrained_layout=True, figsize=(12, 6))
-    gs = fig.add_gridspec(1, 3, width_ratios=[1, 3, 3])
+    fig, ax = plt.subplots(figsize=(12, 6))
+    fig.suptitle("Dimensionamento Fotovoltaico – JandiraSP", fontsize=16)
 
-    # Barra lateral – consumo mensal
-    ax_bar = fig.add_subplot(gs[0, 0])
-    ax_bar.bar(meses, consumos, color="#4e79a7")
-    ax_bar.set_title("Consumo Mensal (kWh)")
-    ax_bar.set_xlabel("Mês")
-    ax_bar.set_ylabel("kWh")
-    ax_bar.tick_params(axis='x', rotation=45)
+    # Barra de consumo mensal
+    ax.bar(meses, consumos, color="#4e79a7")
+    ax.set_title("Consumo Mensal (kWh)")
+    ax.set_xlabel("Mês")
+    ax.set_ylabel("kWh")
+    ax.tick_params(axis='x', rotation=45)
 
-    # Gráfico de métricas – linha
-    ax_line = fig.add_subplot(gs[0, 1:])
-    ax_line.plot(meses, consumos, label="Consumo Mensal", marker='o')
-    ax_line.axhline( métricas["media_diaria"], color='g', linestyle='--',
-                     label=f"Média Diária ({metrics['media_diaria']:.2f} kWh)")
-    ax_line.axhline( métricas["p_pico"] * 1000, color='r', linestyle='-',
-                     label=f"Pico Necessário ({metrics['p_pico']:.2f} kWp)")
-    ax_line.axhline( metrics["capacidade_kwh"], color='m', linestyle='-.',
-                     label=f"Capacidade Bateria ({metrics['capacidade_kwh']:.2f} kWh)")
-    ax_line.set_title("Métricas de Dimensionamento")
-    ax_line.set_xlabel("Mês")
-    ax_line.set_ylabel("kWh / kWp")
-    ax_line.legend()
-    ax_line.tick_params(axis='x', rotation=45)
+    # Linhas de métricas
+    ax.plot(meses, consumos, label="Consumo Mensal", marker='o')
+    ax.axhline(metricas["media_diaria"], color='g', linestyle='--',
+               label=f"Média Diária ({metricas['media_diaria']:.2f} kWh)")
+    ax.axhline(metricas["p_pico"] * 1000, color='r', linestyle='-',
+               label=f"Pico Necessário ({metricas['p_pico']:.2f} kWp)")
+    ax.axhline(metricas["capacidade_kwh"], color='m', linestyle='-.',
+               label=f"Capacidade Bateria ({metricas['capacidade_kwh']:.2f} kWh)")
+    ax.legend()
+    ax.set_ylabel("kWh / kWp")
 
-    plt.suptitle("Dimensionamento Fotovoltaico – Jandira-SP", fontsize=16)
-    plt.show()
+    st.pyplot(fig)
 
-# --------------------------------------------------
-# 4. Programa principal
-# --------------------------------------------------
+
+# ------------------------------------------------------------------
+# 4. Programa principal – página Streamlit
+# ------------------------------------------------------------------
 def main() -> None:
+    st.title("?? Dimensionamento Fotovoltaico – Jandira-SP")
+
+    # 1. Entrada
     consumos = ler_consumo_mensal()
-    metricas = calcular_metricas(consumos)
 
-    # Exibição dos resultados em texto
-    print("\n=== Resultados ===")
-    for key, val in metricas.items():
-        if isinstance(val, float):
-            print(f"{key:20s}: {val:8.2f}")
-        else:
-            print(f"{key:20s}: {val}")
+    # Botão para executar os cálculos
+    if st.button("Calcular"):
+        # 2. Cálculo
+        metricas = calcular_metricas(consumos)
 
-    # Gráficos
-    plotar_graficos(consumos, metricas)
+        # 3. Exibir resultados em texto
+        st.subheader("?? Resultados")
+        for key, val in metricas.items():
+            if isinstance(val, float):
+                st.write(f"**{key.replace('_', ' ').title()}:** {val:8.2f}")
+            else:
+                st.write(f"**{key.replace('_', ' ').title()}:** {val}")
 
+        # 4. Gráficos
+        plotar_graficos(consumos, metricas)
+
+
+# ------------------------------------------------------------------
+# Execução
+# ------------------------------------------------------------------
 if __name__ == "__main__":
     main()
+

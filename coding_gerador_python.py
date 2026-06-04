@@ -4,7 +4,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+# Importa módulo para interagir com o sistema operacional
+import os
 
+# Importa a biblioteca Streamlit para criar a interface web interativa
+import streamlit as st
+
+# Configura a página do Streamlit com título, ícone, layout e estado inicial da sidebar
+st.set_page_config(
+    page_title="CALCULO DE GERADOR SOLAR",
+    page_icon="🤖",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 # --------------------------------------------------
 # 1. Leitura dos 12 valores mensais
 # --------------------------------------------------

@@ -22,7 +22,7 @@ with st.sidebar:
     # Define o título da barra lateral
     st.title("🤖 DADOS DE CONSUMO")
 # Campo para inserir o consumo mensal
-    CONSUMO_MENSAL = st.float(input(f"  Mês {mes:02d}: ")
+    CONSUMO_MENSAL = st.float(input(f"  Mês {mes:02d}: "),
         "Insira consumo menal", 
         type="float",
         help="Obtenha os dados do projeto"

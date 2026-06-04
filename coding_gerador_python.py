@@ -24,7 +24,7 @@ def ler_consumo_mensal() -> list[float]:
     Mostra 12 campos numéricos onde o usuário insere o consumo mensal (kWh).
     Retorna uma lista de floats.
     """
-    st.subheader("?? Inserir Consumo Mensal (kWh)")
+    st.subheader("Inserir Consumo Mensal (kWh)")
 
     consumos = []
     for mes in range(1, 13):
@@ -109,7 +109,7 @@ def plotar_graficos(consumos: list[float], metricas: dict) -> None:
 # 4. Programa principal – página Streamlit
 # ------------------------------------------------------------------
 def main() -> None:
-    st.title("?? Dimensionamento Fotovoltaico – Jandira-SP")
+    st.title("Dimensionamento Fotovoltaico – Jandira-SP")
 
     # 1. Entrada
     consumos = ler_consumo_mensal()

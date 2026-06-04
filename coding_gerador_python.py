@@ -15,7 +15,7 @@ st.set_page_config(
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
-
+)
 # --------------------------------------------------
 # 1. Leitura dos 12 valores mensais
 # --------------------------------------------------
@@ -36,7 +36,7 @@ def ler_consumo_mensal() -> list[float]:
             except ValueError:
                 print("  Valor inválido. Por favor, informe um número positivo.")
     return valores
-)
+
 # --------------------------------------------------
 # 2. Cálculos
 # --------------------------------------------------

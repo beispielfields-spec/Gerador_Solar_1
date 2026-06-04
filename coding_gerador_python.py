@@ -16,6 +16,11 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+# Cria o conteúdo da barra lateral no Streamlit
+with st.sidebar:
+    
+    # Define o título da barra lateral
+    st.title("🤖 DADOS DE CONSUMO")
 # --------------------------------------------------
 # 1. Leitura dos 12 valores mensais
 # --------------------------------------------------

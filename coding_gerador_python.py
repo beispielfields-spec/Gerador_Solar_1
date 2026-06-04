@@ -26,7 +26,7 @@ with st.sidebar:
         "Insira consumo menal", 
         type="float",
         help="Obtenha os dados do projeto"
-)
+  )
 
 # --------------------------------------------------
 # 1. Leitura dos 12 valores mensais

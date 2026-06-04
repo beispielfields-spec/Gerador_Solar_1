@@ -120,7 +120,7 @@ def main() -> None:
         metricas = calcular_metricas(consumos)
 
         # 3. Exibir resultados em texto
-        st.subheader("?? Resultados")
+        st.subheader(" Resultados")
         for key, val in metricas.items():
             if isinstance(val, float):
                 st.write(f"**{key.replace('_', ' ').title()}:** {val:8.2f}")

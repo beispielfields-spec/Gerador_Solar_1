@@ -21,6 +21,10 @@ with st.sidebar:
     
     # Define o título da barra lateral
     st.title("🤖 DADOS DE CONSUMO")
+  # Campo para inserir a chave de API da Groq
+    CONSUMO_MENSAL = st.float(input(f"  Mês {mes:02d}: "))
+        "Insira consumo menal", 
+        type="float",
 # --------------------------------------------------
 # 1. Leitura dos 12 valores mensais
 # --------------------------------------------------
